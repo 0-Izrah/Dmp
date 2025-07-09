@@ -4,6 +4,38 @@
   box-sizing: border-box;
 }
 
+/* Performance Optimizations */
+*,
+*::before,
+*::after {
+  will-change: auto;
+}
+
+/* Optimize animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* GPU acceleration for smooth animations */
+.product-slide,
+.time-unit,
+.order-btn,
+.download-btn,
+.admin-toggle {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000;
+}
+
+/* Optimize font loading */
+@font-display: swap;
+
 :root {
   --primary-black: #000000;
   --secondary-black: #1a1a1a;
@@ -15,10 +47,25 @@
 
 body {
   font-family: "Roboto Condensed", sans-serif;
-  background-color: var(--primary-black);
+  background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #000000 100%);
   color: var(--white);
   line-height: 1.4;
   overflow-x: hidden;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .container {
@@ -48,6 +95,36 @@ body {
   background-attachment: fixed;
   opacity: 0.1;
   z-index: -1;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 100%);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.2) 100%);
+}
+
+/* Selection styles */
+::selection {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
 }
 
 @media (max-width: 480px) {

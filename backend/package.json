@@ -5,6 +5,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "admin": "node admin-server.js",
+    "admin-dev": "nodemon admin-server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,6 +16,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "mongoose": "^8.16.2"
+    "mongoose": "^8.16.2",
+    "multer": "^1.4.5-lts.1"
   }
 }
