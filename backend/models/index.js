@@ -1,0 +1,2 @@
+require('./Dump');
+require('./Photo');
