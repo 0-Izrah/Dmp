@@ -1,26 +1,36 @@
-import { useState , useEffect } from 'react';
+import { BrowserRouter ,Routes , Route , Outlet  } from "react-router-dom";
+import {Navbar , Footer } from "./components/Layout";
+import Home from "./pages/Home";
+import Archive from "./pages/Archive";
+import Upload from "./pages/Upload";
+import DumpView from "./pages/DumpView";
+import './components/Layout/Layout.css'
+import './pages/pages.css'
 
-function App() {
-  const [count, setCount] = useState(0);
-  const [message, setMessage] = useState('Loading...');
-
-  useEffect(() =>{
-    setTimeout(() => {
-      setMessage('data loaded...');
-    }, 1000);},
-  []);
-
+function Layout() {
   return (
-    <div className="App">
-      <h1>Dmp</h1>
-      <p>Welcome</p>
-      <p>Count : {count}</p>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
-      <button onClick={() => setCount(0)}>Reset</button>
-      <p>{message}</p>
-    </div>
-
+    <>
+      <Navbar/>
+      <main className="layout-content">
+        <Outlet />
+      </main>
+      <Footer/>
+    </>
   );
 }
 
-export default App
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/dump/:slug" element={<DumpView />} />
+
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/archive" element={<Archive />} />
+          <Route path="/upload" element={<Upload />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}

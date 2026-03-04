@@ -1,0 +1,20 @@
+.home , .archive , .upload{
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.home h1 , .archive h1 , .upload h1{
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.dump-view{
+    width: 100vw;
+    height: 100vh;
+    background: black;
+    display: flex;
+    flex-direction: column;
+    alig-items:center;
+    justify-content: center;
+    color: white;
+}
