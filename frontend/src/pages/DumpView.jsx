@@ -1,5 +1,6 @@
 import { useParams , useNavigate } from 'react-router-dom';
 import { useDump } from '../hooks/useDumps';
+import { PhotoSwiper } from '../components/Swiper';
 
 export default function DumpView() {
     const { slug } = useParams();
@@ -19,13 +20,7 @@ export default function DumpView() {
     return (
         <div className="dump-view">
             <button className="back-btn" onClick={() => navigate(-1)}>X</button>
-            <h1>{dump.title}</h1>
-            <p>{dump.photos?.length || 0} photos</p>
-            <div style = {{ display: 'flex', flexWrap: 'wrap' , gap: '8px' , padding:'1rem' }}>
-                {dump.photos?.map((photo) => (
-                    <img key={photo._id} src={photo.url} alt={photo.caption} style={{ width: '200px', height: '200px' , objectFit: 'cover' }}/>
-                ))}
-            </div>
+            <PhotoSwiper photos={dump.photos} />
         </div>
 
     );
