@@ -4,7 +4,7 @@ export default function Navbar() {
     return (
         <nav className="navbar">
         <Link to="/" className="navbar-logo">
-            📸 Image Dump
+            Image Dump
         </Link>
         <div className="navbar-links">
             <Link to="/">Home</Link>

@@ -29,7 +29,7 @@ export function useDump(slug){
         if(!slug) return;
 
         setLoading(true);
-        API.get('/dumps/${slug}')
+        API.get(`/dumps/${slug}`)
             .then((res) => {
                 setDump(res.data);
                 setLoading(false);
