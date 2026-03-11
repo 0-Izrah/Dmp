@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/authMiddleware')
 const multer = require('multer');
 const Photo = require('../models/Photo');
 const Dump = require('../models/Dump');
@@ -21,7 +22,7 @@ const upload = multer({
 });
 
 //upload photos to a dump
-router.post ('/upload' , upload.array('photos' , 20) , async(req , res) =>{
+router.post ('/upload' , auth , upload.array('photos' , 20) , async(req , res) =>{
     try{
         const { dumpId } = req.body;
         const dump = await Dump.findById(dumpId);
@@ -82,7 +83,7 @@ router.post ('/upload' , upload.array('photos' , 20) , async(req , res) =>{
     }
 });
 
-router.delete('/:id' , async(req,res) => {
+router.delete('/:id' , auth , async(req,res) => {
     try{
         const photo = await Photo.findById(req.params.id);
         if(!photo){
@@ -98,7 +99,7 @@ router.delete('/:id' , async(req,res) => {
 });
 
 //update details
-router.put('/:id' , async(req,res) => {
+router.put('/:id' , auth , async(req,res) => {
     try{
         const photo = await Photo.findByIdAndUpdate(req.params.id , req.body , { new: true, runValidators: true});
         if(!photo){
@@ -112,7 +113,7 @@ router.put('/:id' , async(req,res) => {
 
 //reorder photos 
 
-router.put('/reorder/:dumpId' , async(req,res) => {
+router.put('/reorder/:dumpId' , auth , async(req,res) => {
     try{
         const { orderedIds } = req.body;
         const operations = orderedIds.map((id , index) => Photo.findByIdAndUpdate(id , { order: index }));

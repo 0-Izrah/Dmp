@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Dump = require('../models/Dump');
-
+const auth = require('../middleware/authMiddleware')
 
 //all dumps
 router.get('/' , async (req , res) => {
@@ -25,7 +25,7 @@ router.get('/:slug' , async(req,res) =>{
     }
 });
 //create new dump
-router.post('/' , async (req,res) => {
+router.post('/' , auth , async (req,res) => {
     try {
         const dump = new Dump(req.body);
         await dump.save();
@@ -35,7 +35,7 @@ router.post('/' , async (req,res) => {
     }
 });
 //update dump
-router.put('/:id' , async (req,res) => {
+router.put('/:id' , auth , async (req,res) => {
     try {
         const dump = await Dump.findByIdAndUpdate(req.params.id , req.body , { new: true, runValidators: true});
         if(!dump){
@@ -47,7 +47,7 @@ router.put('/:id' , async (req,res) => {
     }
 });
 //delete dump
-router.delete('/:id' , async (req,res) => {
+router.delete('/:id' , auth , async (req,res) => {
     try {
         const dump = await Dump.findByIdAndDelete(req.params.id);
         if(!dump){

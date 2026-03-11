@@ -1,42 +1,241 @@
-.home , .archive , .upload{
-    max-width: 1200px;
-    margin: 0 auto;
+.home,
+.archive,
+.upload {
+	max-width: 1200px;
+	margin: 0 auto;
 }
 
-.home h1 , .archive h1 , .upload h1{
-    font-size: 2rem;
-    margin-bottom: 1rem;
+.home h1,
+.archive h1,
+.upload h1 {
+	font-size: 2rem;
+	margin-bottom: 1rem;
 }
 
-.dump-view{
-    width: 100vw;
-    height: 100vh;
-    background: black;
-    display: flex;
-    flex-direction: column;
-    alig-items:center;
-    justify-content: center;
-    color: white;
+.dump-view {
+	width: 100vw;
+	height: 100vh;
+	background: black;
+	display: flex;
+	flex-direction: column;
+	alig-items: center;
+	justify-content: center;
+	color: white;
 }
 
-.back-btn{
-    position :fixed;
-    top: 20px;
-    left : 20px;
-    z-index : 100;
-    background : rgba(0,0,0,0.5);
-    color: white;
-    border: none;
-    width:40px;
-    height:40px;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(10px);
-    transition:background 0.2s;
+.back-btn {
+	position: fixed;
+	top: 20px;
+	left: 20px;
+	z-index: 100;
+	background: rgba(0, 0, 0, 0.5);
+	color: white;
+	border: none;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	font-size: 1.2rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	backdrop-filter: blur(10px);
+	transition: background 0.2s;
 }
-.back-btn:hover{
-    background: rgba(0,0,0,0.8);
+.back-btn:hover {
+	background: rgba(0, 0, 0, 0.8);
+}
+
+.room {
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.room-header {
+	text-align: center;
+	margin-bottom: 2rem;
+}
+
+.room-code-badge {
+	display: inline-block;
+	font-family: "Courier New", monospace;
+	font-size: 1.5rem;
+	letter-spacing: 0.3em;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	padding: 0.5rem 1.5rem;
+	border-radius: 8px;
+	margin-bottom: 1rem;
+}
+
+.room-meta {
+	color: var(--color-text-muted);
+	font-size: 0.9rem;
+}
+
+.room-not-found {
+	text-align: center;
+	padding: 4rem 2rem;
+}
+
+.room-not-found h2 {
+	margin-bottom: 0.5rem;
+}
+
+.room-not-found a {
+	display: inline-block;
+	margin-top: 1rem;
+	color: var(--color-accent);
+	text-decoration: underline;
+}
+
+.room-photo-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 0.5rem;
+}
+
+.room-photo-grid img {
+	width: 100%;
+	aspect-ratio: 1;
+	object-fit: cover;
+	border-radius: 4px;
+}
+
+/* My Rooms page */
+.my-rooms {
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.rooms-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	margin-bottom: 2rem;
+}
+
+.room-card {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	padding: 1rem;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: 8px;
+}
+
+.room-card-code {
+	font-family: "Courier New", monospace;
+	font-size: 1.2rem;
+	letter-spacing: 0.2em;
+	background: var(--color-bg);
+	padding: 0.4rem 0.8rem;
+	border-radius: 6px;
+	border: 1px solid var(--color-border);
+}
+
+.room-card-info {
+	flex: 1;
+}
+
+.room-card-info h3 {
+	font-size: 1rem;
+	margin-bottom: 0.15rem;
+}
+
+.room-card-info span {
+	font-size: 0.8rem;
+	color: var(--color-text-muted);
+}
+
+.copy-btn {
+	padding: 0.4rem 1rem;
+	background: transparent;
+	border: 1px solid var(--color-border);
+	color: var(--color-text);
+	border-radius: 6px;
+	font-size: 0.85rem;
+	transition: background 0.2s;
+}
+
+.copy-btn:hover {
+	background: var(--color-border);
+}
+
+.create-room {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: 12px;
+	padding: 1.5rem;
+}
+
+.create-room h2 {
+	font-size: 1.2rem;
+	margin-bottom: 1rem;
+}
+
+.create-room input[type="text"] {
+	width: 100%;
+	padding: 0.75rem 1rem;
+	background: var(--color-bg);
+	border: 1px solid var(--color-border);
+	border-radius: 8px;
+	color: var(--color-text);
+	font-size: 1rem;
+	font-family: inherit;
+	margin-bottom: 1rem;
+}
+
+.dump-picker {
+	margin-bottom: 1rem;
+}
+
+.dump-picker p {
+	font-size: 0.9rem;
+	color: var(--color-text-muted);
+	margin-bottom: 0.5rem;
+}
+
+.dump-checkbox {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.4rem 0;
+	font-size: 0.95rem;
+	cursor: pointer;
+}
+
+.dump-checkbox input[type="checkbox"] {
+	accent-color: var(--color-accent);
+}
+
+.create-btn {
+	width: 100%;
+	padding: 0.75rem;
+	background: var(--color-accent);
+	color: var(--color-bg);
+	border: none;
+	border-radius: 8px;
+	font-size: 1rem;
+	font-weight: 600;
+}
+
+.create-btn:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+
+.home-room {
+    margin-bottom: 1.5rem;
+}
+
+.home-room h2 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+}
+
+.home-room-card {
+    border-color: var(--color-accent);
+    border-width: 2px;
 }

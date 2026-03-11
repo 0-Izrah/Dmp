@@ -1,20 +1,22 @@
-import { BrowserRouter ,Routes , Route , Outlet  } from "react-router-dom";
-import {Navbar , Footer } from "./components/Layout";
-import Home from "./pages/Home";
-import Archive from "./pages/Archive";
-import Upload from "./pages/Upload";
-import DumpView from "./pages/DumpView";
-import './components/Layout/Layout.css'
-import './pages/pages.css'
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { Navbar, Footer } from './components/Layout';
+import Home from './pages/Home';
+import DumpView from './pages/DumpView';
+import Archive from './pages/Archive';
+import Upload from './pages/Upload';
+import Room from './pages/Room';
+import MyRooms from './pages/MyRooms';
+import './components/Layout/Layout.css';
+import './pages/pages.css';
 
 function Layout() {
   return (
     <>
-      <Navbar/>
+      <Navbar />
       <main className="layout-content">
         <Outlet />
       </main>
-      <Footer/>
+      <Footer />
     </>
   );
 }
@@ -29,6 +31,8 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/archive" element={<Archive />} />
           <Route path="/upload" element={<Upload />} />
+          <Route path="/room/:code" element={<Room />} />
+          <Route path="/my-rooms" element={<MyRooms />} />
         </Route>
       </Routes>
     </BrowserRouter>
