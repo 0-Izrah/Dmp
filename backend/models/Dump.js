@@ -7,6 +7,7 @@ const dumpSchema = new mongoose.Schema({
     coverPhoto:{type:String , default:''},
     month:{type : Number , required: true, min :1,max:12},
     year :{type:Number, required:true},
+    ownerFingerprint:{type: String, required:true},
     tags:{type:[String], default:[]},
     isPublished:{type:Boolean , default:false},
     photos:[{type: mongoose.Schema.Types.ObjectId , ref:'Photo'}],

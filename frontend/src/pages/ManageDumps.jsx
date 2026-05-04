@@ -1,10 +1,10 @@
-import { useDumps } from '../hooks/useDumps';
+import { useMyDumps } from '../hooks/useDumps';
 import DashboardStats from '../components/Manage/DashboardStats';
 import DumpList from '../components/Manage/DumpList';
 import DumpForm from '../components/Manage/DumpForm';
 
 export default function ManageDumps (){
-    const { dumps , loading , error } = useDumps();
+    const { dumps , loading , error } = useMyDumps();
 
     if(loading) return <div>loading dashboard...</div>;
     if(error) return <div>Error Loading Data...</div>;

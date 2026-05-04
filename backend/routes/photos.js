@@ -22,13 +22,15 @@ const upload = multer({
 });
 
 //upload photos to a dump
-router.post ('/upload' , auth , upload.array('photos' , 20) , async(req , res) =>{
+router.post ('/upload' , upload.array('photos' , 20) , async(req , res) =>{
     try{
+        const fp = req.headers['x-fingerprint'];
         const { dumpId } = req.body;
         const dump = await Dump.findById(dumpId);
         if(!dump){
-            return res.status(404).json({ error: 'Dump not found' });
+            return res.status(404).json({error : "Dump not found"});
         }
+        if (dump.ownerFingerprint !== fp) return res.status(403).json({ error: 'Unauthorized' });
         const existingCount = await Photo.countDocuments({ dump: dumpId });
         const uploaded = [];
 
@@ -83,14 +85,20 @@ router.post ('/upload' , auth , upload.array('photos' , 20) , async(req , res) =
     }
 });
 
-router.delete('/:id' , auth , async(req,res) => {
+router.delete('/:id' , async(req,res) => {
     try{
-        const photo = await Photo.findById(req.params.id);
+        const fp = req.headers['x-fingerprint'];
+        const photo = await Photo.findById(req.params.id).populate('dump');
         if(!photo){
             return res.status(404).json({ error: 'Photo not found' });
         }
+        
+        if (photo.dump && photo.dump.ownerFingerprint !== fp) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
         await cloudinary.uploader.destroy(photo.publicId);//delete from cloudinary
-        await Dump.findByIdAndUpdate(photo.dump , { $pull: { photos: photo._id } });//remove reference from dump
+        await Dump.findByIdAndUpdate(photo.dump._id , { $pull: { photos: photo._id } });//remove reference from dump
         await Photo.findByIdAndDelete(req.params.id);//delete from db
         res.json({ message: 'Photo deleted successfully' });
     }catch(err){
@@ -99,8 +107,14 @@ router.delete('/:id' , auth , async(req,res) => {
 });
 
 //update details
-router.put('/:id' , auth , async(req,res) => {
+router.put('/:id' , async(req,res) => {
     try{
+        const fp = req.headers['x-fingerprint'];
+        const existingPhoto = await Photo.findById(req.params.id).populate('dump');
+        if (!existingPhoto || (existingPhoto.dump && existingPhoto.dump.ownerFingerprint !== fp)) {
+             return res.status(403).json({ error: 'Unauthorized' });
+        }
+
         const photo = await Photo.findByIdAndUpdate(req.params.id , req.body , { new: true, runValidators: true});
         if(!photo){
             return res.status(404).json({ error: 'Photo not found' });
@@ -113,8 +127,14 @@ router.put('/:id' , auth , async(req,res) => {
 
 //reorder photos 
 
-router.put('/reorder/:dumpId' , auth , async(req,res) => {
+router.put('/reorder/:dumpId' , async(req,res) => {
     try{
+        const fp = req.headers['x-fingerprint'];
+        const dump = await Dump.findById(req.params.dumpId);
+        if (!dump || dump.ownerFingerprint !== fp) {
+             return res.status(403).json({ error: 'Unauthorized' });
+        }
+
         const { orderedIds } = req.body;
         const operations = orderedIds.map((id , index) => Photo.findByIdAndUpdate(id , { order: index }));
         await Promise.all(operations);

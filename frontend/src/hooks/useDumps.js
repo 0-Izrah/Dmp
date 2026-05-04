@@ -21,6 +21,7 @@ export function useDumps() {
         },
         onSuccess : () => {
             queryClient.invalidateQueries(['dumps']);
+            queryClient.invalidateQueries(['myDumps']);
         }
     });
     const updateDump = useMutation({
@@ -30,6 +31,7 @@ export function useDumps() {
         },
         onSuccess : (updatedDump) => {
             queryClient.invalidateQueries(['dumps']);
+            queryClient.invalidateQueries(['myDumps']);
             queryClient.invalidateQueries(['dump' , updatedDump.slug])
         }
 
@@ -54,4 +56,18 @@ export function useDump(slug) {
     });
 
     return { dump, loading: isLoading, error };
+}
+
+export function useMyDumps() {
+    const queryClient = useQueryClient();
+
+    const { data: dumps = [], isLoading, error } = useQuery({
+        queryKey: ['myDumps'],
+        queryFn: async () => {
+            const res = await API.get('/dumps/mine');
+            return res.data.dumps;
+        }
+    });
+
+    return { dumps, loading: isLoading, error };
 }
