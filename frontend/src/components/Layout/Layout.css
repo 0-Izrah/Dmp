@@ -45,7 +45,7 @@
 }
 
 .room-code-input {
-	width: 130px;
+	width: 210px;
 	padding: 0.4rem 0.6rem;
 	background: var(--color-surface);
 	border: 1px solid var(--color-border);
@@ -94,7 +94,6 @@
 
 .room-code-btn:disabled {
     background : lavenderblush;
-    /* color : red; */
 	opacity: 0.8;
 	cursor: not-allowed;
 }

@@ -5,7 +5,10 @@ export default function Home() {
     const {dumps , loading , error } = useDumps();
 
     if(loading) return <div className="loading">Loading dumps...</div>
-    if(error) return <div className="error">Error loading dumps: {error.message}</div>
+    if(error) {
+        console.error(error.message);
+        return <div className="error">Error loading dumps </div>
+    }
     return (
         <div className="home">
             <header className="home-hero">

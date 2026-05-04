@@ -1802,7 +1802,7 @@ npm install swiper
 
 Before writing code, spend 15 minutes reading:
 - [Swiper React docs](https://swiperjs.com/react)
-- [Swiper demos](https://swiperjs.com/demos) — especially the **Creative Effect** and **Coverflow** demos
+- [Swiper demos](https://swiperjsm.com/demos) — especially the **Creative Effect** and **Coverflow** demos
 
 **🧠 Learn:** Reading docs before coding saves hours. Understand what modules exist, what effects
 are available, and what props the `<Swiper>` component accepts.

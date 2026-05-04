@@ -95,7 +95,7 @@ export default function MyRooms() {
 				<h2>Create New Room</h2>
 				<input
 					type="text"
-					placeholder="Room name (e.g., Beach Trip)"
+					placeholder="Room name (e.g., 'MAY')"
 					value={newName}
 					onChange={(e) => setNewName(e.target.value)}
 				/>

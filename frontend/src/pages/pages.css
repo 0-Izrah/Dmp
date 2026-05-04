@@ -13,14 +13,41 @@
 }
 
 .dump-view {
-	width: 100vw;
-	height: 100vh;
-	background: black;
+	width: 100%;
+	min-height: 100vh;
+	min-height: 100dvh;
+	background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
 	display: flex;
 	flex-direction: column;
-	alig-items: center;
+	align-items: center; 
 	justify-content: center;
 	color: white;
+	position: relative;
+	overflow: hidden;
+}
+
+.dump-meta-overlay {
+	position: fixed;
+	top: 80px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 120;
+	text-align: center;
+	max-width: min(92vw, 900px);
+	padding: 0 1rem;
+}
+
+.dump-title {
+	font-size: clamp(1.25rem, 2vw, 2rem);
+	margin-bottom: 0.35rem;
+	text-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+}
+
+.dump-description {
+	margin: 0;
+	color: rgba(255, 255, 255, 0.8);
+	font-size: clamp(0.875rem, 1.2vw, 1rem);
+	text-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
 }
 
 .back-btn {
@@ -239,3 +266,316 @@
     border-color: var(--color-accent);
     border-width: 2px;
 }
+
+/* Manage Dumps Page */
+.manage-dumps {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.manage-dumps h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.manage-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    flex: 1;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-accent);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.create-dump-btn {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    background: var(--color-accent);
+    color: var(--color-bg);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+/* Dump create/edit form */
+.dump-form {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.dump-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.dump-form label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.3rem;
+}
+
+.dump-form input,
+.dump-form select,
+.dump-form textarea {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+.dump-form textarea {
+    resize: vertical;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    accent-color: var(--color-accent);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--color-accent);
+    color: var(--color-bg);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Dumps table */
+.dumps-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dump-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    transition: border-color 0.2s;
+}
+
+.dump-row.unpublished {
+    opacity: 0.6;
+}
+
+.dump-row-cover {
+    width: 50px;
+    height: 50px;
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.dump-row-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-cover {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-border);
+    font-size: 1.2rem;
+}
+
+.dump-row-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.dump-row-info h3 {
+    font-size: 0.95rem;
+    margin-bottom: 0.1rem;
+}
+
+.dump-row-meta {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.status-badge {
+    padding: 0.25rem 0.6rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.status-badge.published {
+    background: #2d5a2d;
+    color: #8eff8e;
+}
+
+.status-badge.draft {
+    background: #5a4a2d;
+    color: #ffe08e;
+}
+
+.dump-row-actions {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.edit-btn,
+.delete-btn {
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.edit-btn:hover {
+    background: var(--color-border);
+}
+
+.delete-btn:hover {
+    background: #4a1a1a;
+    border-color: #8a3a3a;
+}
+
+/* Edit inline form */
+.dump-edit-form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dump-edit-form input,
+.dump-edit-form textarea {
+    width: 100%;
+    padding: 0.5rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-text);
+    font-family: inherit;
+}
+
+.edit-actions,
+.delete-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.save-btn {
+    padding: 0.4rem 1rem;
+    background: #2d5a2d;
+    color: #8eff8e;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.cancel-btn {
+    padding: 0.4rem 1rem;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.delete-confirm {
+    flex: 1;
+    padding: 0.5rem;
+}
+
+.delete-confirm p {
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.delete-yes {
+    padding: 0.4rem 1rem;
+    background: #8a2a2a;
+    color: #ffaaaa;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .manage-stats {
+        flex-direction: column;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .dump-row {
+        flex-wrap: wrap;
+    }
+
+    .dump-row-meta {
+        white-space: normal;
+    }
+}
+
+

@@ -12,7 +12,7 @@ export default function GalleryGrid({ dumps }){
                 <Link to ={`/dump/${dump.slug}`} key = {dump._id} className="gallery-card">
                     <div className="gallery-card-image">
                         {dump.coverPhoto ? (
-                            <img src = {dump.coverPhoto} alt={dump.title} loading = "lazy" />
+                            <img src = {dump.coverPhoto} loading = "lazy" />
                         ) : (
                             <div className="gallery-card-placeholder">📷</div>
                         )}

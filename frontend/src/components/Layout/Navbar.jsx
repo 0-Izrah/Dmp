@@ -24,7 +24,7 @@ export default function Navbar() {
 				<input
 					type="text"
 					className="room-code-input"
-					placeholder="Enter room code"
+					placeholder=" JOIN ROOM : Enter room code "
 					value={roomCode}
 					onChange={(e) =>
 						setRoomCode(e.target.value.toUpperCase().slice(0, 5))
@@ -44,6 +44,7 @@ export default function Navbar() {
 				<Link to="/">Home</Link>
 				<Link to="/my-rooms">Rooms</Link>
 				<Link to="/archive">Archive</Link>
+				<Link to="/manage">Manage</Link>
 				<Link to="/upload">Upload</Link>
 			</div>
 		</nav>
