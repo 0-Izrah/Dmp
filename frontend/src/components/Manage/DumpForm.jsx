@@ -8,8 +8,10 @@ export default function DumpForm() {
     const handleSubmit = (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
+        const title = formData.get('title');
         const newDump = {
-            title : formData.get('title'),
+            title : title,
+            slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-'), // Generate from title
             month : Number(formData.get('month')),
             year : Number(formData.get('year')),
         };

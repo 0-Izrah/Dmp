@@ -7,6 +7,13 @@ const Dump = require('../models/Dump');
 const cloudinary = require('../config/cloudinary');
 const fs = require('fs');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
+
+const uploadLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, 
+    max: 10, 
+    message: { error: 'Upload limit reached (Max 10 uploads per hour). Please try again later.' }
+});
 
 const upload = multer({
     dest: path.join(__dirname , '../temp/'),
@@ -22,7 +29,7 @@ const upload = multer({
 });
 
 //upload photos to a dump
-router.post ('/upload' , upload.array('photos' , 20) , async(req , res) =>{
+router.post ('/upload' , uploadLimiter, upload.array('photos' , 20) , async(req , res) =>{
     try{
         const fp = req.headers['x-fingerprint'];
         const { dumpId } = req.body;
@@ -53,8 +60,10 @@ router.post ('/upload' , upload.array('photos' , 20) , async(req , res) =>{
                 aspectRatio = 'portrait';
             }
 
+            const optimizedUrl = result.secure_url.replace('/upload/', '/upload/q_auto,f_auto/');
+
             const photo = new Photo({
-                url : result.secure_url,
+                url : optimizedUrl,
                 publicId: result.public_id,
                 width: result.width,
                 height: result.height,
