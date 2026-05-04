@@ -121,6 +121,29 @@
 	gap: 0.5rem;
 }
 
+@media (max-width: 768px) {
+	.room-photo-grid {
+		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+	}
+	
+	.room-code-badge {
+		font-size: 1.1rem;
+		padding: 0.4rem 1rem;
+		letter-spacing: 0.2em;
+	}
+
+	.room-card {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0.5rem;
+		text-align: center;
+	}
+	
+	.room-card-info {
+		margin-bottom: 0.5rem;
+	}
+}
+
 .room-photo-grid img {
 	width: 100%;
 	aspect-ratio: 1;
