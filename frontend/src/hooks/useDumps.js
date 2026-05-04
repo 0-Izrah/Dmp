@@ -1,9 +1,9 @@
 import { useQuery , useMutation , useQueryClient } from '@tanstack/react-query';
+import API from '../services/api';
 
 const fetchDumps = async () => {
-    const res = await fetch('/api/dumps');
-    if(!res.ok) throw new Error ('Failed to fetch dumps');
-    return res.json();
+    const res = await API.get('/dumps');
+    return res.data;
 };
 
 export function useDumps() {
@@ -16,12 +16,8 @@ export function useDumps() {
 
     const createDump = useMutation({
         mutationFn: async(newDump) =>{
-            const res = await fetch('/api/dumps' , {
-                method : 'POST' , 
-                headers : { 'Content-Type' : 'application/json' },
-                body : JSON.stringify(newDump)
-            });
-            return res.json();
+            const res = await API.post('/dumps', newDump);
+            return res.data;
         },
         onSuccess : () => {
             queryClient.invalidateQueries(['dumps']);
@@ -29,13 +25,8 @@ export function useDumps() {
     });
     const updateDump = useMutation({
         mutationFn: async ({ id , updates }) => {
-            const res = await fetch(`/api/dumps/${id}` ,{
-                method : 'PUT' , 
-                headers : { 'Content-Type': 'application/json' },
-                body : JSON.stringify(updates)
-            });
-            if (!res.ok) throw new Error('Failed to update');
-            return res.json();
+            const res = await API.put(`/dumps/${id}`, updates);
+            return res.data;
         },
         onSuccess : (updatedDump) => {
             queryClient.invalidateQueries(['dumps']);
@@ -56,9 +47,8 @@ export function useDump(slug) {
     const { data: dump, isLoading, error } = useQuery({
         queryKey: ['dump', slug],
         queryFn: async () => {
-            const res = await fetch(`/api/dumps/${slug}`);
-            if (!res.ok) throw new Error('Failed to fetch dump');
-            return res.json();
+            const res = await API.get(`/dumps/${slug}`);
+            return res.data;
         },
         enabled: !!slug
     });

@@ -3,13 +3,14 @@ import { useQuery } from '@tanstack/react-query';
 import UploadForm from '../components/Upload/UploadForm';
 import { useDumps } from '../hooks/useDumps';
 import { usePhotos } from '../hooks/usePhotos';
+import API from '../services/api';
 
 export default function ManageDumpDetail() {
     const { slug } = useParams();
 
     const { data: dump, isLoading } = useQuery({
         queryKey: ['dump', slug],
-        queryFn: () => fetch(`/api/dumps/${slug}`).then(r => r.json())
+        queryFn: () => API.get(`/dumps/${slug}`).then(r => r.data)
     });
 
     const { updateDump } = useDumps();
