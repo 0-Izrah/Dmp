@@ -20,9 +20,21 @@ router.get('/', async (req, res) => {
 router.get('/mine', async (req, res) => {
     try {
         const fp = req.headers['x-fingerprint'];
-        if (!fp) return res.status(401).json({ error: 'Fingerprint required' });
+        let query = { ownerFingerprint: fp };
+        
+        // Optional Admin Check
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+            const jwt = require("jsonwebtoken");
+            try {
+                const decoded = jwt.verify(authHeader.split(" ")[1], process.env.JWT_SECRET);
+                if (decoded.role === 'admin') query = {}; // Admin sees all
+            } catch (e) {}
+        }
+        
+        if (!fp && Object.keys(query).length !== 0) return res.status(401).json({ error: 'Fingerprint required' });
 
-        const dumps = await Dump.find({ ownerFingerprint: fp }).sort({ year: -1, month: -1 }).populate('photos');
+        const dumps = await Dump.find(query).sort({ year: -1, month: -1 }).populate('photos');
 
         // Can optionally provide stats
         const stats = {
@@ -46,7 +58,15 @@ router.get('/:slug', async (req, res) => {
         if (!dump) {
             return res.status(404).json({ error: 'Dump not found' });
         }
-        res.json(dump);
+        
+        // Find if it belongs to any room
+        const Room = require('../models/Room');
+        const room = await Room.findOne({ dumps: dump._id });
+        
+        const dumpObj = dump.toObject();
+        dumpObj.roomCode = room ? room.code : null;
+
+        res.json(dumpObj);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch dump', details: err.message });
     }
@@ -58,8 +78,18 @@ router.post('/', async (req, res) => {
         const fp = req.headers['x-fingerprint'];
         if (!fp) return res.status(401).json({ error: 'Fingerprint required' });
 
-        const dump = new Dump({ ...req.body, ownerFingerprint: fp });
+        const { roomCode, ...dumpData } = req.body;
+        const dump = new Dump({ ...dumpData, ownerFingerprint: fp });
         await dump.save();
+
+        if (roomCode) {
+            const Room = require('../models/Room');
+            await Room.findOneAndUpdate(
+                { code: roomCode, ownerFingerprint: fp },
+                { $push: { dumps: dump._id } }
+            );
+        }
+
         res.status(201).json(dump);
     } catch (err) {
         res.status(400).json({ error: 'Failed to create dump', details: err.message });
@@ -73,7 +103,41 @@ router.put('/:id', async (req, res) => {
         const existingDump = await Dump.findById(req.params.id);
         
         if (!existingDump) return res.status(404).json({ error: 'Dump not found' });
-        if (existingDump.ownerFingerprint !== fp) return res.status(403).json({ error: 'Unauthorized to edit this dump' });
+        
+        let isAdmin = false;
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+            const jwt = require("jsonwebtoken");
+            try {
+                const decoded = jwt.verify(authHeader.split(" ")[1], process.env.JWT_SECRET);
+                if (decoded.role === 'admin') isAdmin = true;
+            } catch (e) {}
+        }
+        
+        if (!isAdmin && existingDump.ownerFingerprint !== fp) return res.status(403).json({ error: 'Unauthorized to edit this dump' });
+
+        // Handle room assignment if roomCode is explicitly sent in request body
+        if ('roomCode' in req.body) {
+            const Room = require('../models/Room');
+            const roomCode = req.body.roomCode;
+            
+            // First, remove the dump from all rooms
+            await Room.updateMany(
+                { dumps: existingDump._id },
+                { $pull: { dumps: existingDump._id } }
+            );
+
+            // Then, if a roomCode is provided, add it to that room
+            if (roomCode) {
+                await Room.findOneAndUpdate(
+                    { code: roomCode, ownerFingerprint: fp },
+                    { $push: { dumps: existingDump._id } }
+                );
+            }
+            
+            // Remove roomCode from req.body since it doesn't belong in Dump schema
+            delete req.body.roomCode;
+        }
 
         const dump = await Dump.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
         res.json(dump);
@@ -89,7 +153,18 @@ router.delete('/:id', async (req, res) => {
         if (!dump) {
             return res.status(404).json({ error: 'Dump not found' });
         }
-        if (dump.ownerFingerprint !== fp) return res.status(403).json({ error: 'Unauthorized to delete this dump' });
+        
+        let isAdmin = false;
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+            const jwt = require("jsonwebtoken");
+            try {
+                const decoded = jwt.verify(authHeader.split(" ")[1], process.env.JWT_SECRET);
+                if (decoded.role === 'admin') isAdmin = true;
+            } catch (e) {}
+        }
+        
+        if (!isAdmin && dump.ownerFingerprint !== fp) return res.status(403).json({ error: 'Unauthorized to delete this dump' });
 
 
         if (dump.photos && dump.photos.length > 0) {

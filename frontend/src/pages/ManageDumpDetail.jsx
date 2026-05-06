@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import UploadForm from '../components/Upload/UploadForm';
 import { useDumps } from '../hooks/useDumps';
 import { usePhotos } from '../hooks/usePhotos';
+import { useMyRooms } from '../hooks/useRooms';
 import API from '../services/api';
 
 export default function ManageDumpDetail() {
@@ -15,8 +16,11 @@ export default function ManageDumpDetail() {
 
     const { updateDump } = useDumps();
     const { deletePhoto } = usePhotos();
+    const { rooms = [], homeRoom } = useMyRooms();
 
     if (isLoading) return <div>Loading dump details...</div>;
+
+    const allRooms = homeRoom ? [homeRoom, ...rooms.filter(r => r.code !== homeRoom.code)] : rooms;
 
     const handleUpdateMetadata = (e) => {
         e.preventDefault();
@@ -25,7 +29,8 @@ export default function ManageDumpDetail() {
             id: dump._id,
             updates: {
                 title: formData.get('title'),
-                isPublished: formData.get('isPublished') === 'on'
+                isPublished: formData.get('roomCode') ? false : (formData.get('isPublished') === 'on'),
+                roomCode: formData.get('roomCode') || '' // Empty string implies remove from all rooms
             }
         });
     };
@@ -44,11 +49,25 @@ export default function ManageDumpDetail() {
                         <label>Title</label>
                         <input name="title" defaultValue={dump.title} required/>
                     </div>
+                    <div className="form-group">
+                        <label>Assign to Room</label>
+                        <select name="roomCode" defaultValue={dump.roomCode || ""}>
+                            <option value="">-- Public Gallery (No Room) --</option>
+                            {allRooms.map((room) => (
+                                <option key={room.code} value={room.code}>
+                                    {room.name} ({room.code})
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                     <div className="form-group checkbox-group">
                         <label>
                             <input type="checkbox" name="isPublished" defaultChecked={dump.isPublished} />
                             Published to Public Gallery
                         </label>
+                        <small style={{display: 'block', color: 'var(--color-text-muted)', fontSize: '0.8rem'}}>
+                            (Check if not assigned to a room, ignored if assigned)
+                        </small>
                     </div>
                     <button type="submit" disabled={updateDump.isPending}>
                         {updateDump.isPending ? 'Updating...' : "Save Changes"}

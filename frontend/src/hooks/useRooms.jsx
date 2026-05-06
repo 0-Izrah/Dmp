@@ -48,11 +48,26 @@ export function useMyRooms() {
         return res.data;
     };
 
+    const updateRoom = async (code, updates) => {
+        const res = await API.put(`/rooms/${code}`, updates);
+        queryClient.invalidateQueries(['myRooms']);
+        queryClient.invalidateQueries(['homeRoom']);
+        return res.data;
+    };
+
+    const deleteRoom = async (code) => {
+        const res = await API.delete(`/rooms/${code}`);
+        queryClient.invalidateQueries(['myRooms']);
+        return res.data;
+    };
+
     return {
         rooms,
         homeRoom,
         loading: loadingHome || loadingRooms,
         error: errorHome || errorRooms,
         createRoom,
+        updateRoom,
+        deleteRoom,
     };
 }

@@ -3,7 +3,7 @@ import { useMyRooms } from "../hooks/useRooms";
 import { useDumps } from "../hooks/useDumps";
 
 export default function MyRooms() {
-	const { rooms, homeRoom, loading, createRoom } = useMyRooms();
+	const { rooms, homeRoom, loading, createRoom, updateRoom, deleteRoom } = useMyRooms();
 	const { dumps } = useDumps();
 	const [newName, setNewName] = useState("");
 	const [selectedDumps, setSelectedDumps] = useState([]);
@@ -16,7 +16,11 @@ export default function MyRooms() {
 		setSelectedDumps([]);
 	};
 
-	const toggleDump = (id) => {
+	const handleRename = async (code, currentName) => { const updatedName = window.prompt('Enter new room name:', currentName); if(updatedName && updatedName.trim() !== currentName) { await updateRoom(code, { name: updatedName }); } };
+
+        const handleDelete = async (code) => { if(window.confirm('Are you sure you want to delete this room?')) { await deleteRoom(code); } };
+
+        const toggleDump = (id) => {
 		setSelectedDumps((prev) =>
 			prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id],
 		);
@@ -52,12 +56,21 @@ export default function MyRooms() {
 							<h3>{homeRoom.name}</h3>
 							<span>This is your permanent room code</span>
 						</div>
-						<button
-							className="copy-btn"
-							onClick={() => copyCode(homeRoom.code)}
-						>
-							{copied === homeRoom.code ? "✓ Copied" : "Copy Code"}
-						</button>
+						<div style={{ display: "flex", gap: "0.5rem" }}>
+							<button
+								className="copy-btn"
+								onClick={() => copyCode(homeRoom.code)}
+							>
+								{copied === homeRoom.code ? "✓ Copied" : "Copy Code"}
+							</button>
+							<button
+								className="copy-btn"
+								style={{ background: "var(--color-surface)" }}
+								onClick={() => handleRename(homeRoom.code, homeRoom.name)}
+							>
+								Rename
+							</button>
+						</div>
 					</div>
 				</div>
 			)}
@@ -78,12 +91,28 @@ export default function MyRooms() {
 										<h3>{room.name}</h3>
 										<span>{room.dumps?.length || 0} dumps</span>
 									</div>
-									<button
-										className="copy-btn"
-										onClick={() => copyCode(room.code)}
-									>
-										{copied === room.code ? "✓ Copied" : "Copy Code"}
-									</button>
+									<div style={{ display: "flex", gap: "0.5rem" }}>
+										<button
+											className="copy-btn"
+											onClick={() => copyCode(room.code)}
+										>
+											{copied === room.code ? "✓ Copied" : "Copy Code"}
+										</button>
+										<button
+											className="copy-btn"
+											style={{ background: "var(--color-surface)" }}
+											onClick={() => handleRename(room.code, room.name)}
+										>
+											Rename
+										</button>
+										<button
+											className="copy-btn"
+											style={{ background: "#993333", color: "white" }}
+											onClick={() => handleDelete(room.code)}
+										>
+											Delete
+										</button>
+									</div>
 								</div>
 							))}
 					</div>

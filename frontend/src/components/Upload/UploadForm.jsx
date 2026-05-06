@@ -3,11 +3,11 @@ import { useDumps } from '../../hooks/useDumps';
 import { usePhotoUpload } from '../../hooks/usePhotos';
 import './UploadForm.css';
 
-export default function UploadForm() {
+export default function UploadForm({ dumpId }) {
     const { dumps } = useDumps();
     const { uploadPhotos , uploading , progress , error } = usePhotoUpload();
 
-    const [selectedDump , setSelectedDump] = useState('');
+    const [selectedDump , setSelectedDump] = useState(dumpId || '');
     const [files,setFiles] = useState([]);
     const [captions , setCaptions] = useState([]);
     const [dragActive , setDragActive ] = useState(false);
@@ -63,21 +63,23 @@ export default function UploadForm() {
 
     return (
         <div className="upload-form">
-            <div className="form-group">
-                <label htmlFor="dump-select">Select Dump</label>
-                <select
-                    id="dump-select"
-                    value={selectedDump}
-                    onChange={(e) => setSelectedDump(e.target.value)}
-                >
-                    <option value="">-- Choose a dump --</option>
-                    {dumps.map((d) => (
-                        <option key={d._id} value={d._id}>
-                            {d.title}
-                        </option>
-                    ))}
-                </select>
-            </div>
+            {!dumpId && (
+                <div className="form-group">
+                    <label htmlFor="dump-select">Select Dump</label>
+                    <select
+                        id="dump-select"
+                        value={selectedDump}
+                        onChange={(e) => setSelectedDump(e.target.value)}
+                    >
+                        <option value="">-- Choose a dump --</option>
+                        {dumps.map((d) => (
+                            <option key={d._id} value={d._id}>
+                                {d.title}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
             <div
                 className={`dropzone ${dragActive ? 'dropzone-active' : ''}`}
                 onDragOver={handleDragOver}
