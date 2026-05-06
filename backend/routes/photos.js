@@ -39,7 +39,6 @@ router.post ('/upload' , uploadLimiter, upload.array('photos' , 20) , async(req 
         }
         if (dump.ownerFingerprint !== fp) return res.status(403).json({ error: 'Unauthorized' });
         const existingCount = await Photo.countDocuments({ dump: dumpId });
-        const uploaded = [];
 
         const uploadPromises = req.files.map(async (file, i) => {
             const result = await cloudinary.uploader.upload(file.path, {
