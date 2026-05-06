@@ -41,15 +41,9 @@ router.post ('/upload' , uploadLimiter, upload.array('photos' , 20) , async(req 
         const existingCount = await Photo.countDocuments({ dump: dumpId });
         const uploaded = [];
 
-        for (let i = 0 ; i<req.files.length; i++){
-            const file = req.files[i];
-
-            const result = await cloudinary.uploader.upload(file.path , {
+        const uploadPromises = req.files.map(async (file, i) => {
+            const result = await cloudinary.uploader.upload(file.path, {
                 folder: `photo-dump/${dump.slug}`,
-                transformation: [
-                    {quality: 'auto'},
-                    { fetch_format: 'auto' },
-                ]
             });
             fs.unlinkSync(file.path);
 
@@ -60,7 +54,8 @@ router.post ('/upload' , uploadLimiter, upload.array('photos' , 20) , async(req 
                 aspectRatio = 'portrait';
             }
 
-            const optimizedUrl = result.secure_url.replace('/upload/', '/upload/q_auto,f_auto/');
+            // Optimize for web viewing: auto format, auto quality, and scale down to 1200px max width to preserve bandwidth
+            const optimizedUrl = result.secure_url.replace('/upload/', '/upload/w_1200,q_auto,f_auto/');
 
             const photo = new Photo({
                 url : optimizedUrl,
@@ -74,10 +69,14 @@ router.post ('/upload' , uploadLimiter, upload.array('photos' , 20) , async(req 
                 order: existingCount + i,
             });
             await photo.save();
+            return photo;
+        });
 
-            dump.photos.push(photo._id);
-            uploaded.push(photo);
-        }
+        // Run all uploads to Cloudinary in parallel, drastically reducing upload time.
+        const uploaded = await Promise.all(uploadPromises);
+
+        dump.photos.push(...uploaded.map(p => p._id));
+
         if(!dump.coverPhoto && uploaded.length > 0 ){
             dump.coverPhoto = uploaded[0].url;
         }
