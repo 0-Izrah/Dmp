@@ -1,32 +1,54 @@
 import axios from "axios";
 
-function getFingerprint() {
-    let fp = localStorage.getItem("dmp-fingerprint");
-    if (!fp) {
-        fp = crypto.randomUUID();
-        localStorage.setItem("dmp-fingerprint", fp);
-    }
-    return fp;
-}
+const baseURL = import.meta.env.VITE_API_URL || "/api";
 
 const API = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || "/api",
+    baseURL,
 });
 
-API.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
+let sessionPromise = null;
+
+async function initSession() {
+    let token = localStorage.getItem("token");
+    if (token) return token;
+
+    if (!sessionPromise) {
+        sessionPromise = (async () => {
+            const migrateFp = localStorage.getItem("dmp-fingerprint");
+            const params = migrateFp ? { migrate_fingerprint: migrateFp } : {};
+            
+            // Use raw axios to avoid circular interceptors
+            const res = await axios.get(`${baseURL}/auth/session`, { params });
+            const newToken = res.data.token;
+            
+            localStorage.setItem("token", newToken);
+            if (migrateFp) {
+                localStorage.removeItem("dmp-fingerprint");
+            }
+            return newToken;
+        })();
+    }
+    
+    token = await sessionPromise;
+    sessionPromise = null;
+    return token;
+}
+
+API.interceptors.request.use(async (config) => {
+    // Avoid intercepting auth endpoints to prevent loops
+    if (config.url.includes('/auth/session') || config.url.includes('/auth/login')) {
+        return config;
+    }
+    
+    const token = await initSession();
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
     
-    // We still keep the fingerprint logic for non-admin actions if needed, 
-    // although for Phase 9 we might just use it for analytics/guest tracking
-    config.headers["x-fingerprint"] = getFingerprint();
     return config;
 });
 
 export default API;
-export { getFingerprint };
 
 API.interceptors.response.use(
     (response) => response,

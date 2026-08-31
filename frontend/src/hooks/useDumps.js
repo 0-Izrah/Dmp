@@ -1,17 +1,16 @@
 import { useQuery , useMutation , useQueryClient } from '@tanstack/react-query';
 import API from '../services/api';
 
-const fetchDumps = async () => {
-    const res = await API.get('/dumps');
-    return res.data;
-};
-
-export function useDumps() {
+export function useDumps(page = 1, limit = 20) {
     const queryClient = useQueryClient();
 
-    const { data : dumps = [] , isLoading , isError , error } = useQuery({
-        queryKey : ['dumps'],
-        queryFn : fetchDumps
+    const { data = { dumps: [], totalPages: 1 }, isLoading, isError, error } = useQuery({
+        queryKey: ['dumps', page, limit],
+        queryFn: async () => {
+            const res = await API.get(`/dumps?page=${page}&limit=${limit}`);
+            return res.data;
+        },
+        keepPreviousData: true
     });
 
     const createDump = useMutation({
@@ -37,11 +36,12 @@ export function useDumps() {
 
     })
     return {
-        dumps ,
-        loading : isLoading,
-        error ,
-        createDump ,
-        updateDump ,
+        dumps: data.dumps,
+        totalPages: data.totalPages,
+        loading: isLoading,
+        error,
+        createDump,
+        updateDump,
     };
 }
 
@@ -58,16 +58,23 @@ export function useDump(slug) {
     return { dump, loading: isLoading, error };
 }
 
-export function useMyDumps() {
+export function useMyDumps(page = 1, limit = 20) {
     const queryClient = useQueryClient();
 
-    const { data: dumps = [], isLoading, error } = useQuery({
-        queryKey: ['myDumps'],
+    const { data = { dumps: [], totalPages: 1, stats: {} }, isLoading, error } = useQuery({
+        queryKey: ['myDumps', page, limit],
         queryFn: async () => {
-            const res = await API.get('/dumps/mine');
-            return res.data.dumps;
-        }
+            const res = await API.get(`/dumps/mine?page=${page}&limit=${limit}`);
+            return res.data;
+        },
+        keepPreviousData: true
     });
 
-    return { dumps, loading: isLoading, error };
+    return { 
+        dumps: data.dumps, 
+        totalPages: data.totalPages, 
+        stats: data.stats,
+        loading: isLoading, 
+        error 
+    };
 }

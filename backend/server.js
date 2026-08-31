@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const errorHandler = require("./middleware/errorHandler");
 require('dotenv').config();
 
 require('./models/');
@@ -28,9 +29,11 @@ app.use('/api/dumps', require('./routes/dumps'));
 app.use('/api/photos', require('./routes/photos'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/rooms', require('./routes/rooms'));
-app.use('/api/cleanup' , require('./routes/cleanup'));
+app.use('/api/cleanup', require('./routes/cleanup'));
+
+// Register centralized error handler after all routes
+app.use(errorHandler);
 
 app.listen(PORT , () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
-

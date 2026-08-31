@@ -1,48 +1,46 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // POST /api/auth/login
 router.post("/login", async (req, res) => {
-    try {
-        const { username, password } = req.body;
+    const { username, password } = req.body;
 
-        if (username !== process.env.ADMIN_USERNAME) {
-            return res.status(401).json({ error: "Invalid credentials" });
-        }
-
-        const isMatch = await bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH);
-        if (!isMatch) {
-            return res.status(401).json({ error: "Invalid credentials" });
-        }
-
-        const token = jwt.sign(
-            { role: "admin", username },
-            process.env.JWT_SECRET,
-            { expiresIn: "7d" }
-        );
-
-        res.json({ token });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    if (username !== process.env.ADMIN_USERNAME) {
+        return res.status(401).json({ error: "Invalid credentials" });
     }
+
+    const isMatch = await bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH);
+    if (!isMatch) {
+        return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+        { role: "admin", username },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+    );
+
+    res.json({ token });
 });
 
-// GET /api/auth/verify — verify token
-router.get("/verify", (req, res) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.json({ isAdmin: false, needsSetup: false });
+// GET /api/auth/session
+// Issues an anonymous JWT session. If migrate_fingerprint is provided, bakes it into the JWT.
+router.get("/session", (req, res) => {
+    let sessionId = req.query.migrate_fingerprint;
+    if (!sessionId) {
+        const crypto = require("crypto");
+        sessionId = crypto.randomUUID();
     }
 
-    const token = authHeader.split(" ")[1];
-    try {
-        jwt.verify(token, process.env.JWT_SECRET);
-        res.json({ isAdmin: true, needsSetup: false });
-    } catch (err) {
-        res.json({ isAdmin: false, needsSetup: false });
-    }
+    const token = jwt.sign(
+        { role: "user", sessionId },
+        process.env.JWT_SECRET,
+        { expiresIn: "365d" }
+    );
+
+    res.json({ token, sessionId });
 });
 
 module.exports = router;
